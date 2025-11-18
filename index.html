@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لعبة المحتال — أسئلة أو كلمات</title>
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Noto Sans Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    html, body { font-family: 'Noto Sans Mono', monospace; scroll-behavior: smooth; }
+    /* Red-ish retro background */
+    body{
+      background-color:#7f1d1d; /* Dark red */
+      background-image: url('./assets/images/background_pattern.svg');
+      background-size: 80px 80px;
+    }
+    /* Simple fade utility (used when switching screens) */
+    .fade-in { animation: fade 200ms ease-out; }
+    @keyframes fade { from{opacity:0; transform: translateY(4px)} to{opacity:1; transform: translateY(0)} }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+  <!-- Main Game Container -->
+  <main id="game-container" class="w-full max-w-md bg-red-50 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
+
+    <!-- Header -->
+    <header class="w-full p-6 bg-gradient-to-r from-red-700 to-red-500 shadow-md">
+      <div class="flex flex-col items-center justify-center">
+        <!-- New Logo Placeholder - Jules will ensure 'logo.png' is ready here -->
+        <img id="game-logo" src="./assets/images/logo.png" alt="لعبة المحتال Logo" class="h-24 w-auto block"
+            onerror="this.onerror=null; this.src='https://placehold.co/150x48/f97316/ffffff?text=LOGO+HERE';" />
+      </div>
+    </header>
+
+    <!-- Screens -->
+    <section id="screen-home" class="p-8 space-y-6 fade-in">
+      <div class="p-4 bg-red-100 rounded-lg shadow-inner text-right space-y-3">
+        <h3 class="text-xl font-bold text-red-800">طريقة اللعب:</h3>
+        <ul class="list-disc list-outside pr-5 space-y-1 text-red-700">
+          <li>أدخلوا أسماءكم (٣ لاعبين أو أكثر) بالترتيب.</li>
+          <li>اختاروا النمط: <span class="font-bold text-red-700">أسئلة</span> أو <span class="font-bold text-red-700">كلمات</span>.</li>
+          <li>يحصل كل لاعب على بطاقة سرية… لكن <span class="font-bold text-red-600">المحتال</span> يحصل على بطاقة مختلفة!</li>
+          <li>ناقشوا بحذر لكشف المحتال، ثم صوّتوا سراً.</li>
+        </ul>
+      </div>
+      <button id="go-to-setup-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-red-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300">
+        لنبدأ!
+      </button>
+    </section>
+
+    <!-- Setup -->
+    <section id="screen-setup" class="hidden p-8 space-y-6 fade-in">
+      <h2 class="text-2xl font-bold text-red-800 text-center">إعدادات اللعبة</h2>
+
+      <form id="setup-form" class="space-y-6">
+        <!-- Mode selection -->
+        <fieldset class="bg-white rounded-xl p-4 border border-red-200">
+          <legend class="text-lg font-bold text-red-700 mb-2">اختيار النمط</legend>
+          <div class="flex gap-3">
+            <label class="flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-lg border border-red-200 hover:bg-red-50">
+              <input type="radio" name="mode" id="mode-questions" value="questions" checked class="accent-red-600">
+              <span class="text-red-800 font-medium">أسئلة</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-lg border border-red-200 hover:bg-red-50">
+              <input type="radio" name="mode" id="mode-words" value="words" class="accent-red-600">
+              <span class="text-red-800 font-medium">كلمات</span>
+            </label>
+          </div>
+          <div class="mt-2 text-right">
+            <button type="button" id="reset-history-btn" class="text-xs underline text-red-600 hover:text-red-800">إعادة تعيين عدم التكرار</button>
+          </div>
+        </fieldset>
+
+        <div>
+          <label for="player-name-input" class="block text-lg font-medium text-red-700 mb-2">
+            أدخل أسماء اللاعبين (٣ كحد أدنى)
+          </label>
+          <p class="text-sm text-red-500 -mt-2 mb-2">ملاحظة: أدخلوا الأسماء حسب ترتيب جلوسكم.</p>
+          <div class="flex gap-2">
+            <input id="player-name-input" type="text" placeholder="اسم اللاعب"
+                   class="flex-grow w-full px-4 py-3 text-lg border-2 border-red-300 rounded-xl focus:ring-red-500 focus:border-red-500"
+                   aria-label="اسم اللاعب"/>
+            <button type="button" id="add-player-btn"
+                    class="px-5 py-3 text-lg font-bold text-white bg-red-600 rounded-xl shadow-md hover:bg-red-700 transition hover:scale-[1.04]"
+                    aria-label="إضافة لاعب">+
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-semibold text-red-700">اللاعبون</h3>
+          <span id="player-count" class="text-sm px-2 py-1 rounded-full bg-red-100 text-red-800">0 لاعب</span>
+        </div>
+        <div id="player-list" class="space-y-2 min-h-[56px]"></div>
+      </div>
+
+      <button id="start-game-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-red-400 rounded-xl shadow-lg opacity-70 cursor-not-allowed"
+              disabled>
+        ابدا اللعبة
+      </button>
+    </section>
+
+    <!-- Pass Device -->
+    <section id="screen-pass" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 class="text-3xl font-bold text-red-800">الآن دور...</h2>
+      <div class="p-6 bg-red-100 rounded-xl shadow-inner">
+        <h3 id="pass-player-name" class="text-5xl font-black text-red-600 animate-pulse"></h3>
+      </div>
+      <p id="pass-prompt" class="text-xl text-red-600">مرّر الجهاز لهذا اللاعب!</p>
+      <button id="confirm-player-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-red-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300">
+        نعم، هذا أنا!
+      </button>
+    </section>
+
+    <!-- Reveal Prompt -->
+    <section id="screen-reveal-prompt" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 id="reveal-player-name" class="text-3xl font-bold text-red-800"></h2>
+      <p class="text-xl text-red-600">تأكد أن لا أحد يرى الشاشة غيرك.</p>
+      <button id="reveal-secret-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-red-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300">
+        اضغط لكشف السر!
+      </button>
+    </section>
+
+    <!-- Secret Card -->
+    <section id="screen-secret" class="hidden p-8 space-y-6 text-center fade-in bg-red-900 text-white">
+      <h2 id="secret-title" class="text-2xl font-medium"></h2>
+      <div class="p-6 bg-red-800 rounded-xl shadow-inner min-h-[150px] flex items-center justify-center">
+        <p id="secret-question-text" class="text-3xl font-bold"></p>
+      </div>
+      <button id="hide-secret-btn"
+              class="w-full px-5 py-3 text-lg font-medium bg-red-200 text-red-800 rounded-xl shadow-sm transition hover:scale-[1.02] hover:bg-red-300 focus:outline-none focus:ring-4 focus:ring-red-300">
+        فهمت! إخفاء البطاقة
+      </button>
+    </section>
+
+    <!-- Discussion -->
+    <section id="screen-discuss" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 id="discuss-title" class="text-4xl font-black text-red-700">حان وقت النقاش</h2>
+      <p id="discuss-p1" class="text-xl text-red-700"></p>
+      <p id="discuss-p2" class="text-lg text-red-600"></p>
+      <button id="start-vote-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-red-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300">
+        جاهزون للتصويت!
+      </button>
+    </section>
+
+    <!-- Secret Vote -->
+    <section id="screen-secret-vote" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 id="vote-player-name" class="text-4xl font-black text-red-800"></h2>
+      <p class="text-xl text-red-600">صوّت سراً لمن تظنه المحتال.</p>
+      <p class="text-sm text-red-500">(لا يمكنك التصويت لنفسك)</p>
+      <div id="vote-grid" class="grid grid-cols-2 gap-3 pt-2"></div>
+    </section>
+
+    <!-- Result -->
+    <section id="screen-result" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 class="text-4xl font-black text-red-600">النتيجة</h2>
+      <div id="vote-reveal" class="text-2xl font-bold text-red-800"></div>
+      <div id="imposter-reveal" class="text-3xl font-black"></div>
+
+      <div class="p-4 bg-red-100 rounded-xl shadow-inner space-y-4 text-right">
+        <div>
+          <h4 id="result-normal-label" class="text-lg font-bold text-red-700">سؤال اللاعبين:</h4>
+          <p id="result-normal-question" class="text-xl font-medium text-red-800"></p>
+        </div>
+        <div>
+          <h4 id="result-imposter-label" class="text-lg font-bold text-red-700">سؤال المحتال:</h4>
+          <p id="result-imposter-question" class="text-xl font-medium text-red-800"></p>
+        </div>
+      </div>
+
+      <div id="winner-reveal" class="text-4xl font-black p-4 rounded-xl"></div>
+
+      <button id="play-again-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-red-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300">
+        العب مجدداً!
+      </button>
+    </section>
+
+  </main>
+
+  <!-- UPDATED: Pointing to the external script file -->
+  <script type="module" src="./script.js"></script>
+</body>
+</html>
