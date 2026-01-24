@@ -1,7 +1,18 @@
 import { questionSets, wordSets } from './gameData.js';
 
 // ==========================================
-// 1. نظام الذاكرة (Storage & Logic)
+// 1. نظام التشفير (Security & Hashing)
+// ==========================================
+async function hashCode(str) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ==========================================
+// 2. نظام الذاكرة (Storage & Logic)
 // ==========================================
 const MODE = { QUESTIONS: 'questions', WORDS: 'words' };
 const STORAGE_KEYS = {
@@ -9,29 +20,21 @@ const STORAGE_KEYS = {
   words: 'risha_used_indices_words_v2'
 };
 
-/**
- * دالة لاختيار سؤال/كلمة جديدة لم تستخدم من قبل.
- * إذا انتهت جميع الأسئلة، يتم تصفير الذاكرة والبدء من جديد.
- */
 function getUniqueContent(mode) {
   const bank = mode === MODE.QUESTIONS ? questionSets : wordSets;
   const storageKey = mode === MODE.QUESTIONS ? STORAGE_KEYS.questions : STORAGE_KEYS.words;
   
-  // استرجاع المؤشرات المستخدمة سابقاً
   let usedIndices = JSON.parse(localStorage.getItem(storageKey) || '[]');
   
-  // إذا استهلكنا كل البنك، نعيد التعيين
   if (usedIndices.length >= bank.length) {
     usedIndices = [];
   }
 
-  // البحث عن مؤشر عشوائي غير مستخدم
   let randomIndex;
   do {
     randomIndex = Math.floor(Math.random() * bank.length);
   } while (usedIndices.includes(randomIndex));
 
-  // حفظ المؤشر الجديد
   usedIndices.push(randomIndex);
   localStorage.setItem(storageKey, JSON.stringify(usedIndices));
 
@@ -39,31 +42,29 @@ function getUniqueContent(mode) {
 }
 
 // ==========================================
-// 2. حالة اللعبة (Game State)
+// 3. حالة اللعبة (Game State)
 // ==========================================
 let gameState = {
   players: [],
   mode: MODE.QUESTIONS,
-  currentSet: null,      // السؤال/الكلمة الحالية
-  imposterIndex: -1,     // من هو المحتال؟
-  currentPlayerIndex: 0, // دور من في مسك الجوال؟
-  currentVoteTally: {},  // نتائج التصويت
-  currentVoterIndex: 0,  // دور من في التصويت؟
+  currentSet: null,
+  imposterIndex: -1,
+  currentPlayerIndex: 0,
+  currentVoteTally: {},
+  currentVoterIndex: 0,
 };
 
 // ==========================================
-// 3. عناصر الواجهة (DOM Elements)
+// 4. عناصر الواجهة (DOM Elements)
 // ==========================================
 const $ = (id) => document.getElementById(id);
 const screens = ['login', 'home', 'setup', 'pass', 'reveal-prompt', 'secret', 'discuss', 'secret-vote', 'result'];
 
 const elements = {
-  // Login
   accessCodeInput: $('access-code-input'),
   loginBtn: $('login-btn'),
   loginError: $('login-error'),
   
-  // Setup & Home
   playerList: $('player-list'),
   playerNameInput: $('player-name-input'),
   addPlayerBtn: $('add-player-btn'),
@@ -71,7 +72,6 @@ const elements = {
   playerCount: $('player-count'),
   goToSetupBtn: $('go-to-setup-btn'),
 
-  // Game Flow
   passPlayerName: $('pass-player-name'),
   confirmPlayerBtn: $('confirm-player-btn'),
   
@@ -89,7 +89,6 @@ const elements = {
   votePlayerName: $('vote-player-name'),
   voteGrid: $('vote-grid'),
   
-  // Results
   voteReveal: $('vote-reveal'),
   imposterReveal: $('imposter-reveal'),
   resultNormalQuestion: $('result-normal-question'),
@@ -98,13 +97,13 @@ const elements = {
   resultImposterLabel: $('result-imposter-label'),
   winnerReveal: $('winner-reveal'),
   
-  newRoundBtn: $('new-round-btn'), // الزر الجديد
-  playAgainBtn: $('play-again-btn'), // زر الخروج
+  newRoundBtn: $('new-round-btn'),
+  playAgainBtn: $('play-again-btn'),
   globalExitBtn: $('global-exit-btn')
 };
 
 // ==========================================
-// 4. دوال التحكم بالشاشة (Screen Navigation)
+// 5. التحكم بالشاشة (Navigation)
 // ==========================================
 function switchScreen(targetScreenId) {
   screens.forEach(id => {
@@ -123,10 +122,15 @@ function switchScreen(targetScreenId) {
 }
 
 // ==========================================
-// 5. منطق الدخول (Login Logic)
+// 6. منطق الدخول المحدث (Login Logic)
 // ==========================================
 async function handleLogin() {
-  const inputCode = elements.accessCodeInput.value.trim().toUpperCase();
+  const inputCode = elements.accessCodeInput.value.trim();
+  // ملاحظة: لا نحول الأحرف لكبيرة هنا لأن الهاش حساس للحالة (Case Sensitive)
+  // إلا إذا كنت قد أنشأت الهاش من أحرف كبيرة، حينها استخدم .toUpperCase()
+  // سأفترض أنك تريدها كما أدخلها المستخدم أو كما في نظامك. 
+  // للأمان، سنجربها كما هي.
+  
   if (!inputCode) return;
 
   try {
@@ -134,7 +138,11 @@ async function handleLogin() {
     if (!response.ok) throw new Error("Config missing");
     const config = await response.json();
     
-    if (config.validCodes.includes(inputCode)) {
+    // تشفير ما أدخله المستخدم
+    const inputHash = await hashCode(inputCode);
+    
+    // التحقق من وجود الهاش في القائمة
+    if (config.valid_hashes && config.valid_hashes.includes(inputHash)) {
       elements.loginError.classList.add('hidden');
       switchScreen('home');
     } else {
@@ -143,15 +151,13 @@ async function handleLogin() {
     }
   } catch (error) {
     console.error("Login Error:", error);
-    // في حال عدم وجود ملف config (للتجربة المحلية)، اسمح بالدخول
-    // switchScreen('home'); 
-    elements.loginError.textContent = "خطأ في الاتصال بالنظام.";
+    elements.loginError.textContent = "خطأ في النظام.";
     elements.loginError.classList.remove('hidden');
   }
 }
 
 // ==========================================
-// 6. إدارة اللاعبين (Player Management)
+// 7. إدارة اللعبة (Game Functions)
 // ==========================================
 function renderPlayerList() {
   elements.playerList.innerHTML = '';
@@ -160,16 +166,13 @@ function renderPlayerList() {
     div.className = 'flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100';
     div.innerHTML = `
       <span class="text-gray-800 font-medium">${index + 1}. ${player}</span>
-      <button data-index="${index}" class="remove-player-btn text-rose-500 hover:text-rose-700">
-        ✕
-      </button>
+      <button data-index="${index}" class="remove-player-btn text-rose-500 hover:text-rose-700">✕</button>
     `;
     elements.playerList.appendChild(div);
   });
   
   elements.playerCount.textContent = `${gameState.players.length} لاعب`;
   
-  // تفعيل الزر فقط إذا كان العدد 3 أو أكثر
   if (gameState.players.length >= 3) {
     elements.startGameBtn.disabled = false;
     elements.startGameBtn.classList.remove('bg-rose-400', 'opacity-70', 'cursor-not-allowed');
@@ -191,48 +194,28 @@ function addPlayer() {
   }
 }
 
-// ==========================================
-// 7. منطق اللعبة الأساسي (Core Game Logic)
-// ==========================================
-
-// بدء اللعبة من شاشة الإعدادات (لأول مرة)
 function startGameSetup() {
   const modeRadios = document.querySelectorAll('input[name="mode"]');
   modeRadios.forEach(radio => {
     if (radio.checked) gameState.mode = radio.value;
   });
-  
   startCoreGameLoop();
 }
 
-// بدء جولة جديدة بنفس اللاعبين
 function startNewRound() {
-  // لا نحتاج لتغيير المود أو اللاعبين، فقط نعيد تشغيل الحلقة
   startCoreGameLoop();
 }
 
-// الحلقة المشتركة (تصفير العدادات واختيار محتوى جديد)
 function startCoreGameLoop() {
   if (gameState.players.length < 3) return;
-
-  // 1. اختيار المحتوى (سؤال/كلمة) مع ضمان عدم التكرار
   gameState.currentSet = getUniqueContent(gameState.mode);
-
-  // 2. اختيار المحتال عشوائياً
-  // إصلاح: استخدام Math.random بشكل مباشر في كل جولة لضمان العشوائية
   gameState.imposterIndex = Math.floor(Math.random() * gameState.players.length);
-
-  // 3. تصفير العدادات
   gameState.currentPlayerIndex = 0;
   gameState.currentVoterIndex = 0;
   gameState.currentVoteTally = {};
-
-  // 4. الانتقال للشاشة الأولى
   elements.globalExitBtn.classList.remove('hidden');
   showPassScreen();
 }
-
-// --- شاشات اللعب ---
 
 function showPassScreen() {
   const playerName = gameState.players[gameState.currentPlayerIndex];
@@ -248,20 +231,8 @@ function showRevealPromptScreen() {
 
 function showSecretScreen() {
   const isImposter = (gameState.currentPlayerIndex === gameState.imposterIndex);
-  
-  if (gameState.mode === MODE.QUESTIONS) {
-    // نمط الأسئلة
-    elements.secretTitle.textContent = "السؤال السري:";
-    elements.secretQuestionText.textContent = isImposter ? gameState.currentSet.imposter : gameState.currentSet.normal;
-  
-  } else {
-    // نمط الكلمات (Hard Mode)
-    // المحتال يرى الكلمة المشابهة، اللاعبون يرون الكلمة الأصلية
-    elements.secretTitle.textContent = "الكلمة السرية:";
-    elements.secretQuestionText.textContent = isImposter ? gameState.currentSet.imposter : gameState.currentSet.normal;
-  }
-
-  // تلوين خفيف لتمييز الشاشة (اختياري، حالياً موحد لتجنب كشف الدور من الانعكاس)
+  elements.secretTitle.textContent = (gameState.mode === MODE.QUESTIONS) ? "السؤال السري:" : "الكلمة السرية:";
+  elements.secretQuestionText.textContent = isImposter ? gameState.currentSet.imposter : gameState.currentSet.normal;
   switchScreen('secret');
 }
 
@@ -275,18 +246,12 @@ function nextPlayerOrDiscuss() {
 }
 
 function showDiscussionScreen() {
-  elements.discussP1.textContent = (gameState.mode === MODE.QUESTIONS) 
-    ? "ناقشوا الإجابات بحذر لكشف الدخيل!" 
-    : "تحدثوا عن الكلمة دون ذكرها صراحة!";
-    
-  elements.discussP2.textContent = "تذكروا: المحتال لديه معلومة مختلفة قليلاً ويحاول الاندماج معكم.";
+  elements.discussP1.textContent = (gameState.mode === MODE.QUESTIONS) ? "ناقشوا الإجابات!" : "تحدثوا عن الكلمة!";
+  elements.discussP2.textContent = "المحتال يحاول الاندماج معكم.";
   switchScreen('discuss');
 }
 
-// --- التصويت ---
-
 function showVotePassScreen() {
-  // التحقق من نهاية التصويت
   if (gameState.currentVoterIndex >= gameState.players.length) {
     showResultScreen();
     return;
@@ -298,9 +263,7 @@ function showSecretVoteScreen() {
   const voterName = gameState.players[gameState.currentVoterIndex];
   elements.votePlayerName.textContent = `تصويت ${voterName}`;
   elements.voteGrid.innerHTML = '';
-
   gameState.players.forEach((player, index) => {
-    // لا يمكن للاعب التصويت لنفسه
     if (index !== gameState.currentVoterIndex) {
       const btn = document.createElement('button');
       btn.className = 'vote-btn px-4 py-4 text-lg font-bold text-gray-800 bg-rose-50 border-2 border-rose-100 rounded-xl shadow-sm transition hover:bg-rose-500 hover:text-white hover:border-rose-500';
@@ -309,14 +272,12 @@ function showSecretVoteScreen() {
       elements.voteGrid.appendChild(btn);
     }
   });
-
   switchScreen('secret-vote');
 }
 
 function handleVote(targetPlayerName) {
   gameState.currentVoteTally[targetPlayerName] = (gameState.currentVoteTally[targetPlayerName] || 0) + 1;
   gameState.currentVoterIndex++;
-  
   if (gameState.currentVoterIndex < gameState.players.length) {
     showSecretVoteScreen();
   } else {
@@ -324,14 +285,10 @@ function handleVote(targetPlayerName) {
   }
 }
 
-// --- النتائج ---
-
 function showResultScreen() {
-  // حساب النتائج
   let maxVotes = 0;
   let votedPlayer = null;
   let tie = false;
-
   for (const [player, votes] of Object.entries(gameState.currentVoteTally)) {
     if (votes > maxVotes) {
       maxVotes = votes;
@@ -341,26 +298,14 @@ function showResultScreen() {
       tie = true;
     }
   }
-
   const imposterName = gameState.players[gameState.imposterIndex];
-  
-  // عرض النصوص
-  elements.voteReveal.textContent = votedPlayer 
-    ? `الشكوك تدور حول: ${votedPlayer} (${maxVotes} صوت)` 
-    : "لم يصوت أحد!";
-    
+  elements.voteReveal.textContent = votedPlayer ? `الشكوك تدور حول: ${votedPlayer} (${maxVotes} صوت)` : "لم يصوت أحد!";
   if (tie && maxVotes > 0) elements.voteReveal.textContent += " (تعادل!)";
-
   elements.imposterReveal.textContent = `المحتال الحقيقي: ${imposterName}`;
-
-  // عرض البطاقات
   elements.resultNormalLabel.textContent = gameState.mode === MODE.QUESTIONS ? "سؤال اللاعبين" : "كلمة اللاعبين";
   elements.resultNormalQuestion.textContent = gameState.currentSet.normal;
-  
   elements.resultImposterLabel.textContent = gameState.mode === MODE.QUESTIONS ? "سؤال المحتال" : "كلمة المحتال";
   elements.resultImposterQuestion.textContent = gameState.currentSet.imposter;
-
-  // تحديد الفائز
   const imposterCaught = (votedPlayer === imposterName && !tie);
   if (imposterCaught) {
     elements.winnerReveal.textContent = "🎉 فاز اللاعبون!";
@@ -369,26 +314,18 @@ function showResultScreen() {
     elements.winnerReveal.textContent = "😈 فاز المحتال!";
     elements.winnerReveal.className = "text-3xl font-black p-4 rounded-xl text-center bg-rose-200 text-rose-900 shadow-md transform -rotate-1 border border-rose-300";
   }
-
   switchScreen('result');
 }
 
-
 // ==========================================
-// 8. تهيئة الأحداث (Event Listeners)
+// 8. الأحداث (Event Listeners)
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-  
-  // Login
   elements.loginBtn.addEventListener('click', handleLogin);
   elements.accessCodeInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleLogin();
   });
-
-  // Navigation
   elements.goToSetupBtn.addEventListener('click', () => switchScreen('setup'));
-  
-  // Player Setup
   elements.addPlayerBtn.addEventListener('click', addPlayer);
   elements.playerNameInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); addPlayer(); }
@@ -400,30 +337,22 @@ document.addEventListener('DOMContentLoaded', () => {
       renderPlayerList();
     }
   });
-
-  // Game Control
   elements.startGameBtn.addEventListener('click', startGameSetup);
-  elements.newRoundBtn.addEventListener('click', startNewRound); // الزر الجديد
-  
-  // Game Flow
+  elements.newRoundBtn.addEventListener('click', startNewRound);
   elements.confirmPlayerBtn.addEventListener('click', showRevealPromptScreen);
   elements.revealSecretBtn.addEventListener('click', showSecretScreen);
   elements.hideSecretBtn.addEventListener('click', nextPlayerOrDiscuss);
   elements.startVoteBtn.addEventListener('click', showVotePassScreen);
-
-  // Exit Logic
+  
   function exitToMainMenu() {
-    if(confirm("هل أنت متأكد من الخروج للقائمة الرئيسية؟ سيتم حذف أسماء اللاعبين.")) {
+    if(confirm("هل أنت متأكد من الخروج للقائمة الرئيسية؟")) {
       gameState.players = [];
       renderPlayerList();
       elements.globalExitBtn.classList.add('hidden');
       switchScreen('home');
     }
   }
-  
   elements.playAgainBtn.addEventListener('click', exitToMainMenu);
   elements.globalExitBtn.addEventListener('click', exitToMainMenu);
-
-  // Init
   renderPlayerList();
 });
