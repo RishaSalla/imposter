@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>لعبة المحتال — أسئلة أو كلمات</title>
 
-  <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Google Fonts: Noto Sans Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet"/>
@@ -28,19 +26,15 @@
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4">
-  <!-- Main Game Container -->
   <main id="game-container" class="w-full max-w-md bg-rose-50 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
 
-    <!-- Header -->
     <header class="w-full p-6 bg-gradient-to-r from-rose-900 to-rose-700 shadow-md">
       <div class="flex flex-col items-center justify-center">
-        <!-- New Logo Placeholder - Jules will ensure 'logo.png' is ready here -->
         <img id="game-logo" src="./assets/images/logo.png" alt="لعبة المحتال Logo" class="h-24 w-auto block"
             onerror="this.onerror=null; this.src='https://placehold.co/150x48/f97316/ffffff?text=LOGO+HERE';" />
       </div>
     </header>
 
-    <!-- Global Exit Button -->
     <div class="relative">
         <button id="global-exit-btn" class="hidden absolute top-4 right-4 z-10 text-rose-300 hover:text-white transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
@@ -49,8 +43,26 @@
         </button>
     </div>
 
-    <!-- Screens -->
-    <section id="screen-home" class="p-8 space-y-6 fade-in text-center">
+    <section id="screen-login" class="p-8 space-y-6 fade-in text-center">
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-rose-800">أهلاً بك في لعبة المحتال</h2>
+        <p class="text-rose-700">الرجاء إدخال رمز الدخول للبدء</p>
+        
+        <input type="text" id="access-code-input" placeholder="أدخل الرمز هنا" 
+               class="w-full px-4 py-3 text-lg border-2 border-rose-300 rounded-xl focus:ring-rose-500 focus:border-rose-500 text-center uppercase" />
+        
+        <p id="login-error" class="hidden text-rose-600 font-bold text-sm bg-rose-100 p-2 rounded-lg border border-rose-200">
+          الرمز غير صحيح، حاول مرة أخرى
+        </p>
+
+        <button id="login-btn"
+                class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
+          دخول
+        </button>
+      </div>
+    </section>
+
+    <section id="screen-home" class="hidden p-8 space-y-6 fade-in text-center">
       <div class="p-4 bg-rose-100 rounded-lg shadow-inner text-right space-y-3">
         <h3 class="text-xl font-bold text-rose-800 text-center">طريقة اللعب:</h3>
         <ul class="list-disc list-outside pr-5 space-y-1 text-rose-700 text-right">
@@ -66,12 +78,10 @@
       </button>
     </section>
 
-    <!-- Setup -->
     <section id="screen-setup" class="hidden p-8 space-y-6 fade-in text-center">
       <h2 class="text-2xl font-bold text-rose-800 text-center">إعدادات اللعبة</h2>
 
       <form id="setup-form" class="space-y-6">
-        <!-- Mode selection -->
         <fieldset class="bg-white rounded-xl p-4 border border-rose-200">
           <legend class="text-lg font-bold text-rose-700 mb-2">اختيار النمط</legend>
           <div class="flex gap-3 justify-center">
@@ -118,7 +128,6 @@
       </button>
     </section>
 
-    <!-- Pass Device -->
     <section id="screen-pass" class="hidden p-8 space-y-6 text-center fade-in">
       <h2 class="text-3xl font-bold text-rose-800">الآن دور...</h2>
       <div class="p-6 bg-rose-100 rounded-xl shadow-inner">
@@ -131,7 +140,6 @@
       </button>
     </section>
 
-    <!-- Reveal Prompt -->
     <section id="screen-reveal-prompt" class="hidden p-8 space-y-6 text-center fade-in">
       <h2 id="reveal-player-name" class="text-3xl font-bold text-rose-800"></h2>
       <p class="text-xl text-rose-600">تأكد أن لا أحد يرى الشاشة غيرك.</p>
@@ -141,7 +149,6 @@
       </button>
     </section>
 
-    <!-- Secret Card -->
     <section id="screen-secret" class="hidden p-8 space-y-6 text-center fade-in bg-rose-900 text-white">
       <h2 id="secret-title" class="text-2xl font-medium"></h2>
       <div class="p-6 bg-rose-800 rounded-xl shadow-inner min-h-[150px] flex items-center justify-center">
@@ -153,7 +160,6 @@
       </button>
     </section>
 
-    <!-- Discussion -->
     <section id="screen-discuss" class="hidden p-8 space-y-6 text-center fade-in">
       <h2 id="discuss-title" class="text-4xl font-black text-rose-700">حان وقت النقاش</h2>
       <p id="discuss-p1" class="text-xl text-rose-700"></p>
@@ -164,7 +170,6 @@
       </button>
     </section>
 
-    <!-- Secret Vote -->
     <section id="screen-secret-vote" class="hidden p-8 space-y-6 text-center fade-in">
       <h2 id="vote-player-name" class="text-4xl font-black text-rose-800"></h2>
       <p class="text-xl text-rose-600">صوّت سراً لمن تظنه المحتال.</p>
@@ -172,7 +177,6 @@
       <div id="vote-grid" class="grid grid-cols-2 gap-3 pt-2"></div>
     </section>
 
-    <!-- Result -->
     <section id="screen-result" class="hidden p-8 space-y-6 text-center fade-in">
       <h2 class="text-4xl font-black text-rose-600 text-center">النتيجة</h2>
       <div id="vote-reveal" class="text-2xl font-bold text-rose-800 text-center"></div>
@@ -199,7 +203,6 @@
 
   </main>
 
-  <!-- UPDATED: Pointing to the external script file -->
   <script type="module" src="./script.js"></script>
 </body>
 </html>
