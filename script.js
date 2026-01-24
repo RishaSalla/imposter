@@ -385,9 +385,15 @@ let gameState = {
 
 // DOM elements
 const $ = (selector) => document.getElementById(selector);
-const screens = ['home', 'setup', 'pass', 'reveal-prompt', 'secret', 'discuss', 'secret-vote', 'result'];
+const screens = ['login', 'home', 'setup', 'pass', 'reveal-prompt', 'secret', 'discuss', 'secret-vote', 'result'];
 
 const elements = {
+  // Login Elements
+  accessCodeInput: $('access-code-input'),
+  loginBtn: $('login-btn'),
+  loginError: $('login-error'),
+
+  // Game Elements
   playerList: $('player-list'),
   playerNameInput: $('player-name-input'),
   addPlayerBtn: $('add-player-btn'),
@@ -438,6 +444,36 @@ function switchScreen(targetScreenId) {
     targetScreen.classList.remove('hidden');
     // Ensure fade-in is applied after display: none is removed
     requestAnimationFrame(() => targetScreen.classList.add('fade-in'));
+  }
+}
+
+// --- Login Logic ---
+async function handleLogin() {
+  const inputCode = elements.accessCodeInput.value.trim().toUpperCase();
+  if (!inputCode) return;
+
+  try {
+    // Fetch the config file
+    const response = await fetch('./config.json');
+    if (!response.ok) throw new Error("Config not found");
+    
+    const config = await response.json();
+    
+    if (config.validCodes.includes(inputCode)) {
+      // Success: Proceed to Home Screen
+      elements.loginError.classList.add('hidden');
+      switchScreen('home');
+    } else {
+      // Failure: Show Error
+      elements.loginError.classList.remove('hidden');
+      elements.accessCodeInput.value = '';
+    }
+  } catch (error) {
+    console.error("Login Error:", error);
+    // Fallback if config fails to load (optional security choice: deny or allow?)
+    // Here we deny access by showing error
+    elements.loginError.textContent = "حدث خطأ في النظام. حاول لاحقاً.";
+    elements.loginError.classList.remove('hidden');
   }
 }
 
@@ -555,7 +591,7 @@ function showSecretScreen() {
     // Logic corrected for Word Mode: Imposter knows they are imposter, but NOT the word
     elements.secretTitle.textContent = "الكلمة السرية:";
     if (isImposter) {
-      elements.secretQuestionText.innerHTML = '<img src="/assets/images/logo.png" alt="Logo" class="w-24 h-24 mx-auto opacity-50">';
+      elements.secretQuestionText.innerHTML = '<img src="./assets/images/logo.png" alt="Logo" class="w-24 h-24 mx-auto opacity-50">';
     } else {
       elements.secretQuestionText.textContent = gameState.currentSet.normal;
     }
@@ -708,6 +744,12 @@ function showResultScreen() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+  // Login Listeners
+  elements.loginBtn.addEventListener('click', handleLogin);
+  elements.accessCodeInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleLogin();
+  });
+
   // Setup Screen Listeners
   elements.addPlayerBtn.addEventListener('click', addPlayer);
   elements.playerNameInput.addEventListener('keypress', (e) => {
@@ -754,15 +796,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Initial render
+  // Don't switch to home automatically. Let the Login Screen be default (from HTML).
   renderPlayerList();
-  switchScreen('home');
+  // switchScreen('home'); // DISABLED to allow login screen
 
   // Global Exit button logic
   function resetAndGoHome() {
     gameState.players = [];
     renderPlayerList();
     elements.globalExitBtn.classList.add('hidden');
-    switchScreen('home');
+    switchScreen('home'); // Go to Home (Main Menu), not Login (User stays logged in for session)
   }
   elements.globalExitBtn.addEventListener('click', resetAndGoHome);
 });
