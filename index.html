@@ -1,230 +1,239 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>لعبة المحتال — نسخة ريشة</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لعبة المحتال — نسخة ريشة</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 
-  <style>
-    html, body { font-family: 'Noto Sans Mono', monospace; scroll-behavior: smooth; }
-    /* Red-ish retro background */
-    body{
-      background-color:#3f0712; /* Deep Wine/Maroon */
-      background-image: url('./assets/images/background_pattern.svg');
-      background-size: 80px 80px;
-    }
-    /* Simple fade utility */
-    .fade-in { animation: fade 200ms ease-out; }
-    @keyframes fade { from{opacity:0; transform: translateY(4px)} to{opacity:1; transform: translateY(0)} }
-  </style>
+  <style>
+    html, body { font-family: 'Noto Sans Mono', monospace; scroll-behavior: smooth; }
+    /* Red-ish retro background */
+    body{
+      background-color:#3f0712; /* Deep Wine/Maroon */
+      background-image: url('./assets/images/background_pattern.svg');
+      background-size: 80px 80px;
+    }
+    /* Simple fade utility */
+    .fade-in { animation: fade 200ms ease-out; }
+    @keyframes fade { from{opacity:0; transform: translateY(4px)} to{opacity:1; transform: translateY(0)} }
+  </style>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QQ7RRK75RN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-QQ7RRK75RN');
+  </script>
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4">
-  <main id="game-container" class="w-full max-w-md bg-rose-50 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
+  <main id="game-container" class="w-full max-w-md bg-rose-50 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10">
 
-    <header class="w-full p-6 bg-gradient-to-r from-rose-900 to-rose-700 shadow-md">
-      <div class="flex flex-col items-center justify-center">
-        <img id="game-logo" src="./assets/images/logo.png" alt="لعبة المحتال Logo" class="h-24 w-auto block"
-            onerror="this.onerror=null; this.src='https://placehold.co/150x48/f97316/ffffff?text=RISHA+GAMES';" />
-      </div>
-    </header>
+    <header class="w-full p-6 bg-gradient-to-r from-rose-900 to-rose-700 shadow-md">
+      <div class="flex flex-col items-center justify-center">
+        <img id="game-logo" src="./assets/images/logo.png" alt="لعبة المحتال Logo" class="h-24 w-auto block"
+            onerror="this.onerror=null; this.src='https://placehold.co/150x48/f97316/ffffff?text=RISHA+GAMES';" />
+      </div>
+    </header>
 
-    <div class="relative">
-        <button id="global-exit-btn" class="hidden absolute top-4 right-4 z-10 text-rose-300 hover:text-white transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-            </svg>
-        </button>
-    </div>
+    <div class="relative">
+        <button id="global-exit-btn" class="hidden absolute top-4 right-4 z-10 text-rose-300 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
 
-    <section id="screen-login" class="p-8 space-y-6 fade-in text-center">
-      <div class="space-y-4">
-        <h2 class="text-2xl font-bold text-rose-800">أهلاً بك في لعبة المحتال</h2>
-        <p class="text-rose-700">الرجاء إدخال رمز الدخول للبدء</p>
-        
-        <input type="text" id="access-code-input" placeholder="أدخل الرمز هنا" 
-               class="w-full px-4 py-3 text-lg border-2 border-rose-300 rounded-xl focus:ring-rose-500 focus:border-rose-500 text-center uppercase" />
-        
-        <p id="login-error" class="hidden text-rose-600 font-bold text-sm bg-rose-100 p-2 rounded-lg border border-rose-200">
-          الرمز غير صحيح، حاول مرة أخرى
-        </p>
+    <section id="screen-login" class="p-8 space-y-6 fade-in text-center">
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-rose-800">أهلاً بك في لعبة المحتال</h2>
+        <p class="text-rose-700">الرجاء إدخال رمز الدخول للبدء</p>
+        
+        <input type="text" id="access-code-input" placeholder="أدخل الرمز هنا" 
+               class="w-full px-4 py-3 text-lg border-2 border-rose-300 rounded-xl focus:ring-rose-500 focus:border-rose-500 text-center uppercase" />
+        
+        <p id="login-error" class="hidden text-rose-600 font-bold text-sm bg-rose-100 p-2 rounded-lg border border-rose-200">
+          الرمز غير صحيح، حاول مرة أخرى
+        </p>
 
-        <button id="login-btn"
-                class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
-          دخول
-        </button>
-      </div>
-    </section>
+        <button id="login-btn"
+                class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
+          دخول
+        </button>
+      </div>
+    </section>
 
-    <section id="screen-home" class="hidden p-8 space-y-6 fade-in text-center">
-      <div class="p-4 bg-rose-100 rounded-lg shadow-inner text-right space-y-3">
-        <h3 class="text-xl font-bold text-rose-800 text-center">طريقة اللعب:</h3>
-        <ul class="list-disc list-outside pr-5 space-y-1 text-rose-700 text-right">
-          <li>أدخلوا أسماءكم (٣ لاعبين أو أكثر).</li>
-          <li>اختاروا النمط: <span class="font-bold text-rose-700">أسئلة</span> أو <span class="font-bold text-rose-700">كلمات</span>.</li>
-          <li>في نمط الأسئلة: المحتال يرى سؤالاً مختلفاً (خادعاً).</li>
-          <li>في نمط الكلمات: المحتال لا يعرف الكلمة، يرى "أنت المحتال" فقط!</li>
-          <li>حللوا الإجابات واكشفوا من يدعي المعرفة!</li>
-        </ul>
-      </div>
-      <button id="go-to-setup-btn"
-              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
-        لنبدأ اللعب
-      </button>
-    </section>
+    <section id="screen-home" class="hidden p-8 space-y-6 fade-in text-center">
+      <div class="p-4 bg-rose-100 rounded-lg shadow-inner text-right space-y-3">
+        <h3 class="text-xl font-bold text-rose-800 text-center">طريقة اللعب:</h3>
+        <ul class="list-disc list-outside pr-5 space-y-1 text-rose-700 text-right">
+          <li>أدخلوا أسماءكم (٣ لاعبين أو أكثر).</li>
+          <li>اختاروا النمط: <span class="font-bold text-rose-700">أسئلة</span> أو <span class="font-bold text-rose-700">كلمات</span>.</li>
+          <li>في نمط الأسئلة: المحتال يرى سؤالاً مختلفاً (خادعاً).</li>
+          <li>في نمط الكلمات: المحتال لا يعرف الكلمة، يرى "أنت المحتال" فقط!</li>
+          <li>حللوا الإجابات واكشفوا من يدعي المعرفة!</li>
+        </ul>
+      </div>
+      <button id="go-to-setup-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
+        لنبدأ اللعب
+      </button>
+    </section>
 
-    <section id="screen-setup" class="hidden p-8 space-y-6 fade-in text-center">
-      <h2 class="text-2xl font-bold text-rose-800 text-center">إعدادات اللعبة</h2>
+    <section id="screen-setup" class="hidden p-8 space-y-6 fade-in text-center">
+      <h2 class="text-2xl font-bold text-rose-800 text-center">إعدادات اللعبة</h2>
 
-      <form id="setup-form" class="space-y-6">
-        <fieldset class="bg-white rounded-xl p-4 border border-rose-200">
-          <legend class="text-lg font-bold text-rose-700 mb-2">اختيار النمط</legend>
-          <div class="flex gap-3 justify-center">
-            <label class="flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-lg border border-rose-200 hover:bg-rose-50 transition">
-              <input type="radio" name="mode" id="mode-questions" value="questions" checked class="accent-rose-600 w-5 h-5">
-              <span class="text-rose-800 font-medium">أسئلة</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-lg border border-rose-200 hover:bg-rose-50 transition">
-              <input type="radio" name="mode" id="mode-words" value="words" class="accent-rose-600 w-5 h-5">
-              <span class="text-rose-800 font-medium">كلمات</span>
-            </label>
-          </div>
-        </fieldset>
+      <form id="setup-form" class="space-y-6">
+        <fieldset class="bg-white rounded-xl p-4 border border-rose-200">
+          <legend class="text-lg font-bold text-rose-700 mb-2">اختيار النمط</legend>
+          <div class="flex gap-3 justify-center">
+            <label class="flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-lg border border-rose-200 hover:bg-rose-50 transition">
+              <input type="radio" name="mode" id="mode-questions" value="questions" checked class="accent-rose-600 w-5 h-5">
+              <span class="text-rose-800 font-medium">أسئلة</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none px-3 py-2 rounded-lg border border-rose-200 hover:bg-rose-50 transition">
+              <input type="radio" name="mode" id="mode-words" value="words" class="accent-rose-600 w-5 h-5">
+              <span class="text-rose-800 font-medium">كلمات</span>
+            </label>
+          </div>
+        </fieldset>
 
-        <div class="text-center">
-          <label for="player-name-input" class="block text-lg font-medium text-rose-700 mb-2">
-            أدخل أسماء اللاعبين
-          </label>
-          <p class="text-sm text-rose-500 -mt-2 mb-2">بالترتيب حسب الجلوس (٣ كحد أدنى)</p>
-          <div class="flex gap-2">
-            <input id="player-name-input" type="text" placeholder="اسم اللاعب"
-                   class="flex-grow w-full px-4 py-3 text-lg border-2 border-rose-300 rounded-xl focus:ring-rose-500 focus:border-rose-500" />
-            <button type="button" id="add-player-btn"
-                    class="px-5 py-3 text-lg font-bold text-white bg-rose-600 rounded-xl shadow-md hover:bg-rose-700 transition hover:scale-[1.04]">
-              +
-            </button>
-          </div>
-        </div>
-      </form>
+        <div class="text-center">
+          <label for="player-name-input" class="block text-lg font-medium text-rose-700 mb-2">
+            أدخل أسماء اللاعبين
+          </label>
+          <p class="text-sm text-rose-500 -mt-2 mb-2">بالترتيب حسب الجلوس (٣ كحد أدنى)</p>
+          <div class="flex gap-2">
+            <input id="player-name-input" type="text" placeholder="اسم اللاعب"
+                   class="flex-grow w-full px-4 py-3 text-lg border-2 border-rose-300 rounded-xl focus:ring-rose-500 focus:border-rose-500" />
+            <button type="button" id="add-player-btn"
+                    class="px-5 py-3 text-lg font-bold text-white bg-rose-600 rounded-xl shadow-md hover:bg-rose-700 transition hover:scale-[1.04]">
+              +
+            </button>
+          </div>
+        </div>
+      </form>
 
-      <div class="space-y-2 text-center">
-        <div class="flex items-center justify-center gap-2">
-          <h3 class="text-xl font-semibold text-rose-700">القائمة:</h3>
-          <span id="player-count" class="text-sm px-2 py-1 rounded-full bg-rose-100 text-rose-800 font-bold">0 لاعب</span>
-        </div>
-        <div id="player-list" class="space-y-2 min-h-[56px]"></div>
-      </div>
+      <div class="space-y-2 text-center">
+        <div class="flex items-center justify-center gap-2">
+          <h3 class="text-xl font-semibold text-rose-700">القائمة:</h3>
+          <span id="player-count" class="text-sm px-2 py-1 rounded-full bg-rose-100 text-rose-800 font-bold">0 لاعب</span>
+        </div>
+        <div id="player-list" class="space-y-2 min-h-[56px]"></div>
+      </div>
 
-      <button id="start-game-btn" type="button"
-              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-400 rounded-xl shadow-lg opacity-70 cursor-not-allowed transition-all"
-              disabled>
-        ابدأ الجولة
-      </button>
-    </section>
+      <button id="start-game-btn" type="button"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-400 rounded-xl shadow-lg opacity-70 cursor-not-allowed transition-all"
+              disabled>
+        ابدأ الجولة
+      </button>
+    </section>
 
-    <section id="screen-pass" class="hidden p-8 space-y-6 text-center fade-in">
-      <h2 class="text-3xl font-bold text-rose-800">الآن دور...</h2>
-      <div class="p-6 bg-rose-100 rounded-xl shadow-inner transform rotate-1">
-        <h3 id="pass-player-name" class="text-5xl font-black text-rose-600 animate-pulse"></h3>
-      </div>
-      <p class="text-xl text-rose-600">مرّر الجهاز لهذا اللاعب!</p>
-      <button id="confirm-player-btn"
-              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
-        نعم، هذا أنا!
-      </button>
-    </section>
+    <section id="screen-pass" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 class="text-3xl font-bold text-rose-800">الآن دور...</h2>
+      <div class="p-6 bg-rose-100 rounded-xl shadow-inner transform rotate-1">
+        <h3 id="pass-player-name" class="text-5xl font-black text-rose-600 animate-pulse"></h3>
+      </div>
+      <p class="text-xl text-rose-600">مرّر الجهاز لهذا اللاعب!</p>
+      <button id="confirm-player-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
+        نعم، هذا أنا!
+      </button>
+    </section>
 
-    <section id="screen-reveal-prompt" class="hidden p-8 space-y-6 text-center fade-in">
-      <h2 id="reveal-player-name" class="text-3xl font-bold text-rose-800"></h2>
-      <p class="text-xl text-rose-600 font-medium">تأكد أن لا أحد ينظر للشاشة غيرك.</p>
-      <div class="flex justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-rose-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-      </div>
-      <button id="reveal-secret-btn"
-              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
-        اضغط لكشف السر!
-      </button>
-    </section>
+    <section id="screen-reveal-prompt" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 id="reveal-player-name" class="text-3xl font-bold text-rose-800"></h2>
+      <p class="text-xl text-rose-600 font-medium">تأكد أن لا أحد ينظر للشاشة غيرك.</p>
+      <div class="flex justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-rose-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+      </div>
+      <button id="reveal-secret-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
+        اضغط لكشف السر!
+      </button>
+    </section>
 
-    <section id="screen-secret" class="hidden p-8 space-y-6 text-center fade-in bg-rose-900 text-white rounded-xl shadow-2xl border-4 border-rose-800">
-      <h2 id="secret-title" class="text-2xl font-medium text-rose-200"></h2>
-      
-      <div class="p-6 bg-rose-800 rounded-xl shadow-inner min-h-[160px] flex items-center justify-center transform hover:scale-105 transition duration-300">
-        <p id="secret-question-text" class="text-3xl font-black leading-snug"></p>
-      </div>
-      
-      <p class="text-sm text-rose-300 opacity-80">احفظ المعلومة جيداً...</p>
+    <section id="screen-secret" class="hidden p-8 space-y-6 text-center fade-in bg-rose-900 text-white rounded-xl shadow-2xl border-4 border-rose-800">
+      <h2 id="secret-title" class="text-2xl font-medium text-rose-200"></h2>
+      
+      <div class="p-6 bg-rose-800 rounded-xl shadow-inner min-h-[160px] flex items-center justify-center transform hover:scale-105 transition duration-300">
+        <p id="secret-question-text" class="text-3xl font-black leading-snug"></p>
+      </div>
+      
+      <p class="text-sm text-rose-300 opacity-80">احفظ المعلومة جيداً...</p>
 
-      <button id="hide-secret-btn"
-              class="w-full px-5 py-3 text-lg font-bold bg-rose-100 text-rose-900 rounded-xl shadow-lg transition hover:bg-white hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-rose-300">
-        فهمت! إخفاء البطاقة
-      </button>
-    </section>
+      <button id="hide-secret-btn"
+              class="w-full px-5 py-3 text-lg font-bold bg-rose-100 text-rose-900 rounded-xl shadow-lg transition hover:bg-white hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-rose-300">
+        فهمت! إخفاء البطاقة
+      </button>
+    </section>
 
-    <section id="screen-discuss" class="hidden p-8 space-y-6 text-center fade-in">
-      <h2 class="text-4xl font-black text-rose-800">وقت النقاش!</h2>
-      <div class="space-y-4 bg-white p-4 rounded-xl shadow-sm border border-rose-100">
-        <p id="discuss-p1" class="text-xl font-bold text-rose-700"></p>
-        <p id="discuss-p2" class="text-lg text-rose-600"></p>
-      </div>
-      <button id="start-vote-btn"
-              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300 animate-bounce">
-        جاهزون للتصويت
-      </button>
-    </section>
+    <section id="screen-discuss" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 class="text-4xl font-black text-rose-800">وقت النقاش!</h2>
+      <div class="space-y-4 bg-white p-4 rounded-xl shadow-sm border border-rose-100">
+        <p id="discuss-p1" class="text-xl font-bold text-rose-700"></p>
+        <p id="discuss-p2" class="text-lg text-rose-600"></p>
+      </div>
+      <button id="start-vote-btn"
+              class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300 animate-bounce">
+        جاهزون للتصويت
+      </button>
+    </section>
 
-    <section id="screen-secret-vote" class="hidden p-8 space-y-6 text-center fade-in">
-      <h2 id="vote-player-name" class="text-3xl font-black text-rose-800"></h2>
-      <p class="text-xl text-rose-600">من هو المحتال برأيك؟</p>
-      <div id="vote-grid" class="grid grid-cols-2 gap-3 pt-2">
-        </div>
-    </section>
+    <section id="screen-secret-vote" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 id="vote-player-name" class="text-3xl font-black text-rose-800"></h2>
+      <p class="text-xl text-rose-600">من هو المحتال برأيك؟</p>
+      <div id="vote-grid" class="grid grid-cols-2 gap-3 pt-2">
+        </div>
+    </section>
 
-    <section id="screen-result" class="hidden p-8 space-y-6 text-center fade-in">
-      <h2 class="text-4xl font-black text-rose-600 text-center">النتيجة النهائية</h2>
-      
-      <div id="winner-reveal" class="text-3xl font-black p-4 rounded-xl text-center shadow-md transform rotate-1"></div>
+    <section id="screen-result" class="hidden p-8 space-y-6 text-center fade-in">
+      <h2 class="text-4xl font-black text-rose-600 text-center">النتيجة النهائية</h2>
+      
+      <div id="winner-reveal" class="text-3xl font-black p-4 rounded-xl text-center shadow-md transform rotate-1"></div>
 
-      <div class="space-y-1">
-        <div id="vote-reveal" class="text-lg font-medium text-rose-800 text-center"></div>
-        <div id="imposter-reveal" class="text-2xl font-black text-center text-rose-900"></div>
-      </div>
+      <div class="space-y-1">
+        <div id="vote-reveal" class="text-lg font-medium text-rose-800 text-center"></div>
+        <div id="imposter-reveal" class="text-2xl font-black text-center text-rose-900"></div>
+      </div>
 
-      <div class="p-4 bg-rose-100 rounded-xl shadow-inner space-y-4 text-right border border-rose-200">
-        <div>
-          <h4 id="result-normal-label" class="text-sm font-bold text-rose-500 text-center uppercase tracking-wide">بطاقة اللاعبين</h4>
-          <p id="result-normal-question" class="text-xl font-bold text-rose-900 text-center mt-1"></p>
-        </div>
-        <div class="border-t border-rose-200 pt-3">
-          <h4 id="result-imposter-label" class="text-sm font-bold text-rose-500 text-center uppercase tracking-wide">بطاقة المحتال</h4>
-          <p id="result-imposter-question" class="text-xl font-bold text-rose-900 text-center mt-1"></p>
-        </div>
-      </div>
+      <div class="p-4 bg-rose-100 rounded-xl shadow-inner space-y-4 text-right border border-rose-200">
+        <div>
+          <h4 id="result-normal-label" class="text-sm font-bold text-rose-500 text-center uppercase tracking-wide">بطاقة اللاعبين</h4>
+          <p id="result-normal-question" class="text-xl font-bold text-rose-900 text-center mt-1"></p>
+        </div>
+        <div class="border-t border-rose-200 pt-3">
+          <h4 id="result-imposter-label" class="text-sm font-bold text-rose-500 text-center uppercase tracking-wide">بطاقة المحتال</h4>
+          <p id="result-imposter-question" class="text-xl font-bold text-rose-900 text-center mt-1"></p>
+        </div>
+      </div>
 
-      <div class="space-y-3 pt-2">
-        <button id="new-round-btn"
-                class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
-          جولة جديدة (نفس الأسماء)
-        </button>
-        
-        <button id="play-again-btn"
-                class="w-full px-6 py-3 text-lg font-medium text-rose-700 bg-rose-200 rounded-xl shadow-sm transition hover:bg-rose-300 focus:outline-none focus:ring-4 focus:ring-rose-200">
-          خروج للقائمة الرئيسية
-        </button>
-      </div>
-    </section>
+      <div class="space-y-3 pt-2">
+        <button id="new-round-btn"
+                class="w-full px-6 py-4 text-xl font-bold text-white bg-rose-600 rounded-xl shadow-lg transition hover:scale-[1.02] hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-300">
+          جولة جديدة (نفس الأسماء)
+        </button>
+        
+        <button id="play-again-btn"
+                class="w-full px-6 py-3 text-lg font-medium text-rose-700 bg-rose-200 rounded-xl shadow-sm transition hover:bg-rose-300 focus:outline-none focus:ring-4 focus:ring-rose-200">
+          خروج للقائمة الرئيسية
+        </button>
+      </div>
+    </section>
 
-  </main>
+  </main>
 
-  <script type="module" src="./script.js"></script>
+  <script type="module" src="./script.js"></script>
 </body>
 </html>
